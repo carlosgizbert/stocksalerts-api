@@ -1,30 +1,28 @@
 from celery import shared_task
+from django.utils import timezone
+
+from prostocks.utils.email_utils import send_email
 from .models import Stock, PriceEntry
 import yfinance as yf
-from datetime import datetime
+from datetime import datetime, timedelta
 
 @shared_task
-def send_email_task(subject, body, subscriber):
-    print('Ola sou um email aaaaaa')
-    print(datetime.now())
-
+def send_email_task(subject, body, to_email):
+    send_email(subject, body, to_email)
 
 @shared_task
 def update_prices_periodically():
     stocks = Stock.objects.all()
-    current_minute = datetime.now().minute
+    current_minute = timezone.now().minute
 
     for stock in stocks:
-        # Verifica se o minuto atual é múltiplo do check_frequency da ação
         if current_minute % stock.check_frequency == 0:
             ticker = yf.Ticker(stock.symbol)
-            today = datetime.now().date()
-            current_time = datetime.now().time()
-            # Obtém os dados de preços a cada minuto para o dia atual
+            today = timezone.localdate()
+            current_time = timezone.localtime(timezone.now())
             price_data = ticker.history(interval='1m', period='1d')
 
             if not price_data.empty:
-                # Pega a última linha para obter a cotação mais recente
                 latest_data = price_data.iloc[-1]
                 open_price = latest_data['Open']
                 close_price = latest_data['Close']
@@ -34,9 +32,36 @@ def update_prices_periodically():
                 new_entry = PriceEntry()
                 new_entry.stock = stock
                 new_entry.date = today
-                new_entry.time = current_time
+                new_entry.time = current_time.time()
                 new_entry.open_price = open_price
                 new_entry.close_price = close_price
                 new_entry.high_price = high_price
                 new_entry.low_price = low_price
                 new_entry.save()
+
+                lower_limit = stock.lower_tunnel_limit
+                upper_limit = stock.upper_tunnel_limit
+
+                RANGE_TO_NOTIFY_IN_MINUTES = 1440
+
+                if close_price < lower_limit and (
+                        not stock.last_notification_sent
+                        or stock.last_notification_sent < timezone.now() - timedelta(minutes=RANGE_TO_NOTIFY_IN_MINUTES)
+                ):
+                    # Enviar e-mail sugerindo compra
+                    subject = f"ProStocks - Sugestão de compra para {stock.symbol}"
+                    body = f"O preço de {stock.symbol} cruzou o limite inferior do túnel. Sugerimos avaliar uma compra."
+                    send_email_task.delay(subject, body, stock.user.email)
+                    stock.last_notification_sent = timezone.now()
+                    stock.save()
+
+                elif close_price > upper_limit and (
+                        not stock.last_notification_sent
+                        or stock.last_notification_sent < timezone.now() - timedelta(minutes=RANGE_TO_NOTIFY_IN_MINUTES)
+                ):
+                    # Enviar e-mail sugerindo venda
+                    subject = f"ProStocks - Sugestão de venda para {stock.symbol}"
+                    body = f"O preço de {stock.symbol} cruzou o limite superior do túnel. Sugerimos avaliar uma venda."
+                    send_email_task.delay(subject, body, stock.user.email)
+                    stock.last_notification_sent = timezone.now()
+                    stock.save()
