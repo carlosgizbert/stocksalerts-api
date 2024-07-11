@@ -4,8 +4,8 @@ from django.db import models
 
 class Stock(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    symbol = models.CharField(max_length=10, unique=True)
-    description = models.CharField(max_length=255)
+    symbol = models.CharField(max_length=10, unique=False)
+    description = models.CharField(max_length=255, null=True, blank=True)
     lower_tunnel_limit = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     upper_tunnel_limit = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     check_frequency = models.PositiveIntegerField(default=60)
