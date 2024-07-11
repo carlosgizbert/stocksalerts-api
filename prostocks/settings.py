@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'rest_framework',
     'corsheaders',
+    'rest_framework_simplejwt',
 ]
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
@@ -55,6 +56,12 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'stocks.tasks.update_prices_periodically',
         'schedule': crontab(minute='*'),
     },
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
 }
 
 MIDDLEWARE = [
@@ -135,10 +142,10 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
+USE_TZ = True
 
 USE_I18N = True
 
-USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)

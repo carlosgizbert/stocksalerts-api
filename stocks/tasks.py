@@ -39,27 +39,22 @@ def update_prices_periodically():
                 new_entry.low_price = low_price
                 new_entry.save()
 
-                lower_limit = stock.lower_tunnel_limit
-                upper_limit = stock.upper_tunnel_limit
-
                 RANGE_TO_NOTIFY_IN_MINUTES = 1440
 
-                if close_price < lower_limit and (
+                if close_price < stock.lower_tunnel_limit and (
                         not stock.last_notification_sent
                         or stock.last_notification_sent < timezone.now() - timedelta(minutes=RANGE_TO_NOTIFY_IN_MINUTES)
                 ):
-                    # Enviar e-mail sugerindo compra
                     subject = f"ProStocks - Sugestão de compra para {stock.symbol}"
                     body = f"O preço de {stock.symbol} cruzou o limite inferior do túnel. Sugerimos avaliar uma compra."
                     send_email_task.delay(subject, body, stock.user.email)
                     stock.last_notification_sent = timezone.now()
                     stock.save()
 
-                elif close_price > upper_limit and (
+                elif close_price > stock.upper_tunnel_limit and (
                         not stock.last_notification_sent
                         or stock.last_notification_sent < timezone.now() - timedelta(minutes=RANGE_TO_NOTIFY_IN_MINUTES)
                 ):
-                    # Enviar e-mail sugerindo venda
                     subject = f"ProStocks - Sugestão de venda para {stock.symbol}"
                     body = f"O preço de {stock.symbol} cruzou o limite superior do túnel. Sugerimos avaliar uma venda."
                     send_email_task.delay(subject, body, stock.user.email)
