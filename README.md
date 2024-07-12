@@ -8,6 +8,7 @@ Cadastrar, alterar e excluir ativos e rastrealos com base no valor minimo e máx
 * ✔️ autenticação do usuário via jwt
 * ✔️ cadastro/edição/exclusão de ativos
 * ✔️ historico de preços dos ativos em tempo real
+* ✔️ notificações por email
 
 ### principais tecnologias
 * <a href="https://www.djangoproject.com/" about="_blank">Django + Rest framework (DRF)</a> (Django SimpleJWT para autenticação)
