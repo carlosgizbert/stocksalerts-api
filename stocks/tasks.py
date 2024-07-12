@@ -4,7 +4,7 @@ from django.utils import timezone
 from prostocks.utils.email_utils import send_email
 from .models import Stock, PriceEntry
 import yfinance as yf
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 @shared_task
 def send_email_task(subject, body, to_email):
@@ -29,25 +29,26 @@ def update_prices_periodically():
                 high_price = latest_data['High']
                 low_price = latest_data['Low']
 
-                new_entry = PriceEntry()
-                new_entry.stock = stock
-                new_entry.date = today
-                new_entry.time = current_time.time()
-                new_entry.open_price = open_price
-                new_entry.close_price = close_price
-                new_entry.high_price = high_price
-                new_entry.low_price = low_price
+                new_entry = PriceEntry(
+                    stock=stock,
+                    date=today,
+                    time=current_time.time(),
+                    open_price=open_price,
+                    close_price=close_price,
+                    high_price=high_price,
+                    low_price=low_price
+                )
                 new_entry.save()
 
-                RANGE_TO_NOTIFY_IN_MINUTES = 1440
+                RANGE_TO_NOTIFY_IN_MINUTES = 3
 
                 if close_price < stock.lower_tunnel_limit and (
                         not stock.last_notification_sent
                         or stock.last_notification_sent < timezone.now() - timedelta(minutes=RANGE_TO_NOTIFY_IN_MINUTES)
                 ):
                     subject = f"ProStocks - Sugestão de compra para {stock.symbol}"
-                    body = f"O preço de {stock.symbol} cruzou o limite inferior do túnel. Sugerimos avaliar uma compra."
-                    send_email_task.delay(subject, body, stock.user.email)
+                    html = f"<strong>O preço de {stock.symbol} é R${high_price}, e cruzou o limite inferior do túnel. Sugerimos avaliar uma compra. <br> Caso o valor se mantenha, você receberá uma nova notificação em {RANGE_TO_NOTIFY_IN_MINUTES} minutos</strong>"
+                    send_email(subject, html_content=html, text_content='Teste', to_email=stock.user.username)
                     stock.last_notification_sent = timezone.now()
                     stock.save()
 
@@ -56,7 +57,7 @@ def update_prices_periodically():
                         or stock.last_notification_sent < timezone.now() - timedelta(minutes=RANGE_TO_NOTIFY_IN_MINUTES)
                 ):
                     subject = f"ProStocks - Sugestão de venda para {stock.symbol}"
-                    body = f"O preço de {stock.symbol} cruzou o limite superior do túnel. Sugerimos avaliar uma venda."
-                    send_email_task.delay(subject, body, stock.user.email)
+                    html = f"<strong>O preço de {stock.symbol} é é R${high_price}, e cruzou o limite superior do túnel. Sugerimos avaliar uma venda. <br> Caso o valor se mantenha, você receberá uma nova notificação em {RANGE_TO_NOTIFY_IN_MINUTES} minutos</strong>"
+                    send_email(subject, html_content=html, text_content='Teste', to_email=stock.user.username)
                     stock.last_notification_sent = timezone.now()
                     stock.save()

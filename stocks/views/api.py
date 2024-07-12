@@ -11,7 +11,7 @@ class StockViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Stock.objects.filter(user=self.request.user)
+        return Stock.objects.filter(user=self.request.user).order_by('-created_at')
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -41,7 +41,7 @@ class PriceEntryViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return PriceEntry.objects.filter(stock__user=self.request.user)
+        return PriceEntry.objects.filter(stock__user=self.request.user).order_by('-created_at')
 
 # class PriceEntryViewSet(viewsets.ModelViewSet):
 #     queryset = PriceEntry.objects.all()
