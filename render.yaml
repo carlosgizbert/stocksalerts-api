@@ -31,9 +31,7 @@ services:
       - key: REDIS_URL
         value: redis://redis:6379/0
       - key: SECRET_KEY
-        envVarRef:
-          name: prostocks
-          key: SECRET_KEY
+        value: "{{ env.PROSTOCKS_SECRET_KEY }}"
 
   - type: worker
     name: celery-beat
@@ -49,9 +47,7 @@ services:
       - key: REDIS_URL
         value: redis://redis:6379/0
       - key: SECRET_KEY
-        envVarRef:
-          name: prostocks
-          key: SECRET_KEY
+        value: "{{ env.PROSTOCKS_SECRET_KEY }}"
 
   - type: redis
     name: redis
