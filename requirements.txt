@@ -23,6 +23,7 @@ html5lib==1.1
 idna==3.7
 kombu==5.3.7
 lxml==5.2.2
+mailersend==0.5.7
 multitasking==0.0.11
 numpy==2.0.0
 pandas==2.2.2
