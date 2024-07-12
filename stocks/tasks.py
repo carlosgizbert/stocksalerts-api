@@ -40,7 +40,7 @@ def update_prices_periodically():
                 )
                 new_entry.save()
 
-                RANGE_TO_NOTIFY_IN_MINUTES = 3
+                RANGE_TO_NOTIFY_IN_MINUTES = 120
 
                 if close_price < stock.lower_tunnel_limit and (
                         not stock.last_notification_sent
