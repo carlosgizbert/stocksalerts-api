@@ -5,12 +5,13 @@ from django.db import models
 def validate_unique_symbol(value):
     if isinstance(value, str):
         if Stock.objects.filter(symbol=value).exists():
-            raise ValidationError('Symbol must be unique for each user.')
+            raise ValidationError('Symbol must be unique.')
     else:
         user = value.user
         symbol = value.symbol
-        if Stock.objects.filter(user=user, symbol=symbol).exists():
-            raise ValidationError('Symbol must be unique for each user.')
+        existing_stocks = Stock.objects.filter(user=user, symbol=symbol)
+        if existing_stocks.exists() and existing_stocks.exclude(pk=value.pk).exists():
+            raise ValidationError('Symbol must be unique.')
 
 class Stock(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

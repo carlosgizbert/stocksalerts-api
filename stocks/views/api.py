@@ -16,7 +16,8 @@ class StockViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         try:
-            serializer.save(user=self.request.user)
+            serializer.validated_data['user'] = self.request.user
+            serializer.save()
         except ValidationError as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
