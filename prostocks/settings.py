@@ -116,7 +116,7 @@ WSGI_APPLICATION = 'prostocks.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL')
+        default=os.getenv('DATABASE_URL', 'postgresql://stocksdb_h6m0_user:uhvPPZGR2tBX89oxiC5MOfVfU5UvX8By@dpg-cq8c72ij1k6c73chq4m0-a/stocksdb_h6m0')
     )
 }
 
