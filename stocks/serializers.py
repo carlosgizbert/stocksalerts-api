@@ -4,7 +4,7 @@ from stocks.models import Stock, PriceEntry
 class StockSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stock
-        fields = ['id', 'symbol', 'description', 'lower_tunnel_limit', 'upper_tunnel_limit',
+        fields = ['id','symbol', 'description', 'lower_tunnel_limit', 'upper_tunnel_limit',
                   'check_frequency', 'created_at', 'updated_at', 'last_notification_sent']
 
 class PriceEntrySerializer(serializers.ModelSerializer):
