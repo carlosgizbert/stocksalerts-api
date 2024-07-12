@@ -1,20 +1,14 @@
-databases:
-  - name: mysitedb
-    plan: free
-    databaseName: mysite
-    user: mysite
-
 services:
   - type: web
     plan: free
-    name: mysite
+    name: prostocks
     runtime: python
     buildCommand: "./build.sh"
     startCommand: "python -m gunicorn prostocks.asgi:application -k uvicorn.workers.UvicornWorker"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: mysitedb
+          name: prostocksdb
           property: connectionString
       - key: SECRET_KEY
         generateValue: true
@@ -32,14 +26,15 @@ services:
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: mysitedb
+          name: prostocksdb
           property: connectionString
       - key: REDIS_URL
         value: redis://redis:6379/0
       - key: SECRET_KEY
         fromService:
-          name: mysite
+          name: prostocks
           key: SECRET_KEY
+          type: env
 
   - type: worker
     name: celery-beat
@@ -50,15 +45,18 @@ services:
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: mysitedb
+          name: prostocksdb
           property: connectionString
       - key: REDIS_URL
         value: redis://redis:6379/0
       - key: SECRET_KEY
         fromService:
-          name: mysite
+          name: prostocks
           key: SECRET_KEY
+          type: env
 
   - type: redis
     name: redis
     plan: free
+    ipAllowList:
+      - 0.0.0.0/0
