@@ -70,13 +70,12 @@ MIDDLEWARE = [
 ]
 
 # CORS CONFIG START
-CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = [
-    "https://stocksalerts-web.vercel.app",
-]
+# APENAS PARA TESTAR ...
+CORS_ALLOW_ALL_ORIGINS = True
 
 ALLOWED_HOSTS = [
-    '127.0.0.1'
+    '127.0.0.1',
+    'localhost'
 ]
 
 # render.com
