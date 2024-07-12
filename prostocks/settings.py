@@ -27,7 +27,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # render.com
-SECRET_KEY = os.environ.get('SECRET_KEY', default='django-insecure-px5)_$6+%h_it7_10e)!43l7+f%&23x249fo0jcc^!m#o_c+4!')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-px5)_$6+%h_it7_10e)!43l7+f%&23x249fo0jcc^!m#o_c+4!')
 DEBUG = 'RENDER' not in os.environ
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
