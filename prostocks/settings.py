@@ -18,21 +18,8 @@ from celery.schedules import crontab
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-ALLOWED_HOSTS = []
-
 from dotenv import load_dotenv
 load_dotenv()
-
-# render.com
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-px5)_$6+%h_it7_10e)!43l7+f%&23x249fo0jcc^!m#o_c+4!')
-DEBUG = 'RENDER' not in os.environ
-RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
-
 
 # Application definition
 
@@ -82,12 +69,21 @@ MIDDLEWARE = [
 ]
 
 # CORS CONFIG START
-ALLOWED_HOSTS = []
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
+    "https://stocksalerts-web.vercel.app/",
 ]
+
+ALLOWED_HOSTS = []
+
+# render.com
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-px5)_$6+%h_it7_10e)!43l7+f%&23x249fo0jcc^!m#o_c+4!')
+DEBUG = 'RENDER' not in os.environ
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+else:
+    ALLOWED_HOSTS.append('localhost')
 # CORS CONFIG END
 
 ROOT_URLCONF = 'prostocks.urls'
