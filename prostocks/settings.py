@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 
+import dj_database_url
 from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -28,6 +29,9 @@ SECRET_KEY = 'django-insecure-px5)_$6+%h_it7_10e)!43l7+f%&23x249fo0jcc^!m#o_c+4!
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+from dotenv import load_dotenv
+load_dotenv()
 
 # Application definition
 
@@ -110,10 +114,9 @@ WSGI_APPLICATION = 'prostocks.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL')
+    )
 }
 
 
