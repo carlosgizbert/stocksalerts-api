@@ -6,7 +6,7 @@ import yfinance as yf
 from prostocks.utils.email_utils import send_email
 from .models import Stock, PriceEntry
 
-RANGE_TO_NOTIFY_IN_MINUTES = 120
+RANGE_TO_NOTIFY_IN_MINUTES = 60
 
 @shared_task
 def send_email_task(subject, body, to_email):
